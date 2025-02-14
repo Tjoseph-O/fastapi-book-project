@@ -1,54 +1,54 @@
 
-# name: CI Pipeline test
+name: CI Pipeline test
 
-# on:
-#   pull_request:
-#     branches:
-#       - main
+on:
+  pull_request:
+    branches:
+      - main
 
-# jobs:
-#   test:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v3
-
-#       - name: Set up Python
-#         uses: actions/setup-python@v4
-#         with:
-#           python-version: '3.12'
-
-#       - name: Install dependencies
-#         run: |
-#           python -m venv venv
-#           source venv/bin/activate
-#           pip install -r requirements.txt
-
-#       - name: Run tests
-#         run: |
-#             source venv/bin/activate
-#             pytest
-
-
-
-
-name: CI
-on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.12'
+
       - name: Install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-      - name: Run Tests
+
+      - name: Run tests
         run: |
-          source venv/bin/activate
-          pytest
+            source venv/bin/activate
+            pytest
+
+
+
+
+# name: CI
+# on: [push, pull_request]
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Set up Python
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: '3.10'
+#       - name: Install dependencies
+#         run: |
+#           python -m venv venv
+#           source venv/bin/activate
+#           pip install -r requirements.txt
+#       - name: Run Tests
+#         run: |
+#           source venv/bin/activate
+#           pytest
