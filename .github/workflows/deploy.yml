@@ -15,8 +15,8 @@ jobs:
       - name: Add SSH key to agent
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.EC2_SSH_KEY }}
-          known_hosts: ${{ secrets.EC2_KNOWN_HOSTS }} 
+          key: ${{ secrets.EC2_SSH_KEY }}  # This is the ONLY correct way!
+          known_hosts: 'just accept' # In production, use a known_hosts value
 
       - name: Deploy to EC2
         run: |
