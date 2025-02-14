@@ -1,38 +1,5 @@
 
 
-name: CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Add SSH key to agent
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.EC2_SSH_KEY }}  # This is the ONLY correct way!
-          known_hosts: 'just accept' # In production, use a known_hosts value
-
-      - name: Deploy to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-            set -e  # Exit on error
-            cd /home/ubuntu/fastapi-book-project
-            git pull origin main
-            source venv/bin/activate
-            pip install -r requirements.txt
-            sudo systemctl restart fastapi
-          EOF
-
-
-
 # name: CD Pipeline
 
 # on:
@@ -53,17 +20,41 @@ jobs:
 #           key: ${{ secrets.EC2_SSH_KEY }}  # This is the ONLY correct way!
 #           known_hosts: 'just accept' # In production, use a known_hosts value
 
-#       - name: Add host to known_hosts
-#         run: |
-#           ssh-keyscan ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
-
 #       - name: Deploy to EC2
 #         run: |
-#           ssh ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+#           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
 #             set -e  # Exit on error
-#             cd /home/ubuntu/Desktop/fastapi-book-project
+#             cd /home/ubuntu/fastapi-book-project
 #             git pull origin main
 #             source venv/bin/activate
 #             pip install -r requirements.txt
 #             sudo systemctl restart fastapi
 #           EOF
+
+
+
+
+
+name: CD
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/fastapi-app
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            sudo systemctl restart fastapi
+            sudo systemctl restart nginx
